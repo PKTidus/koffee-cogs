@@ -1,0 +1,12 @@
+{
+  "author" : ["coffeebank"],
+  "install_msg" : "Krtmover installed (fork of coffeebank's Msgmover).\n\n**`[p]krtmove`** - Transfer an entire channel, oldest to newest, to another channel/server. Resumable and survives restarts.\n**`[p]msgcopy`** - Copies a set # of messages from one channel to another *(single-use)*\n**`[p]msgrelay`** - Forward new messages to other channels/servers *(continuous)*\n\n⚠️ Unload the original `msgmover` cog first, the commands overlap.\n\nTo see this message again, type **`[p]help Krtmover`**",
+  "name" : "krtmover",
+  "short" : "Move messages (and whole channels) across channels and servers",
+  "requirements" : [],
+  "description" : "Make moving messages between channels/servers easy and integrated, using webhooks.\n\nmsgcopy: Copy messages from one channel to another. Move whole conversations, or merge channels easily with re-uploaded attachments, bot messages, and usernames/profiles replicated in full. Includes timestamp spacers.\n\nmsgrelay: Relay messages from one channel to another channel/server. Supports usernames/profile pics, replies, attachments (files/images/video), and embeds (bot command replies). Supports edited/deleted messages. Supports forwarding to multiple webhooks/channels.\n\nUpdated for Red 3.5",
+  "permissions" : [],
+  "end_user_data_statement" : "This cog does not store any End User Data.",
+  "tags" : ["relays", "move", "messages", "forwarding", "link", "channels", "server", "pictures"],
+  "min_bot_version": "3.5.0"
+}
