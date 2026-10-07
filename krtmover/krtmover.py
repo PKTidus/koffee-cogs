@@ -276,10 +276,12 @@ class Krtmover(commands.Cog):
         """
 
     @krtmove.command(name="start")
-    async def krt_start(self, ctx, fromChannel: typing.Union[discord.TextChannel, discord.Thread], toChannel: typing.Union[discord.TextChannel, str]):
+    async def krt_start(self, ctx, fromChannel: typing.Union[discord.TextChannel, discord.Thread], toChannel: typing.Union[discord.TextChannel, str], start_after_id: typing.Optional[int] = None):
         """Start a transfer from the very beginning of fromChannel
 
-        toChannel can be a #channel (in a server the bot is in) or a webhook URL (any server)."""
+        toChannel can be a #channel (in a server the bot is in) or a webhook URL (any server).
+        start_after_id is an optional message ID. If provided, the transfer starts copying messages *after* this one.
+        """
         if ctx.guild.id in self._tasks:
             return await ctx.send("A transfer is already running in this server. See `krtmove status` or `krtmove stop`.")
         old = await self.config.guild(ctx.guild).krtJob()
@@ -298,11 +300,22 @@ class Krtmover(commands.Cog):
             fromChannel=fromChannel.id, toWebhook=toWebhook, notifyChannel=ctx.channel.id,
             delete=old["delete"], merge=old["merge"], running=True,
         )
+        if start_after_id:
+            try:
+                m = await fromChannel.fetch_message(start_after_id)
+                job["lastId"] = m.id
+                job["lastCreated"] = m.created_at.timestamp()
+            except discord.NotFound:
+                return await ctx.send("Could not find that message ID in the source channel.")
+            except discord.HTTPException:
+                return await ctx.send("Failed to fetch the start message. Please check the ID.")
+
         if job["delete"] and not me.manage_messages:
             return await ctx.send(f"Delete mode is on but I don't have **Manage Messages** in {fromChannel.mention}.")
         await self.config.guild(ctx.guild).krtJob.set(job)
         self._start_task(ctx.guild.id)
-        await ctx.send(f"🚚 Transfer started from {fromChannel.mention} (oldest first). "
+        msg_suffix = f" after message `{start_after_id}`" if start_after_id else " (oldest first)"
+        await ctx.send(f"🚚 Transfer started from {fromChannel.mention}{msg_suffix}. "
                        f"Merge: **{job['merge']}**, Delete: **{job['delete']}**. Check progress with `{ctx.clean_prefix}krtmove status`.")
 
     @krtmove.command(name="resume")
